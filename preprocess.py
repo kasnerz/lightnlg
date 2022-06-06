@@ -26,15 +26,21 @@ class Preprocessor:
         """
         examples = []
 
-        if self.mode == "plain":
+        if self.mode == "causal_lm":
+            # input == output for causal LM
             example = {
                 "in" : entry
+            }
+        elif self.mode == "seq2seq":
+            # a simple case without any processing
+            example = {
+                "in" : entry[0],
+                "out" : entry[1]
              }
         else:
             raise ValueError("Unknown mode")
 
         examples.append(example)
-
         return examples
 
 
@@ -58,7 +64,7 @@ if __name__ == '__main__':
         help="Name of the dataset to preprocess.")
     parser.add_argument("--dataset_dir", type=str, default=None,
         help="Path to the dataset")
-    parser.add_argument("--mode", choices=["plain"], required=True,
+    parser.add_argument("--mode", choices=["causal_lm", "seq2seq"], required=True,
         help="Preprocessing mode, depends on the dataset")
     parser.add_argument("--output", type=str, required=True,
         help="Name of the output directory")

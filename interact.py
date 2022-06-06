@@ -70,13 +70,11 @@ if __name__ == "__main__":
     elif args.model_name:
         dm = inference_module_cls(args)
 
-    
-
     while True:
         s = input("[In]: ")
         out = dm.predict(s)
         
         print("[Out]:")
-        pp(out)
+        pp(out, width=300)
         print("============")
 

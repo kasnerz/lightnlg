@@ -110,10 +110,6 @@ class CausalLMDataModule(DataModule):
             columns = ["attention_mask", "input_ids", "labels"]
             columns_to_remove = ["in"]
 
-            # if "out" in raw_dataset[split].features.keys():
-            #     columns_to_remove.append("out")
-            #     columns.append("labels")
-
             dataset[split] = raw_dataset[split].map(
                 self._convert_to_features,
                 batched=True,
@@ -163,7 +159,11 @@ class Seq2SeqDataModule(DataModule):
 
         for split in raw_dataset.keys():
             columns = ["attention_mask", "input_ids"]
-            columns_to_remove = ["out"]
+            columns_to_remove = ["in"]
+
+            if "out" in raw_dataset[split].features.keys():
+                columns_to_remove.append("out")
+                columns.append("labels")
 
             dataset[split] = raw_dataset[split].map(
                 self._convert_to_features,
@@ -174,7 +174,6 @@ class Seq2SeqDataModule(DataModule):
                 type="torch",
                 columns=columns
             )
-
         return dataset
 
 

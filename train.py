@@ -81,11 +81,12 @@ if __name__ == '__main__':
         if args.resume_training:
             resume_from_checkpoint = args.model_path
     else:
+        if args.resume_training:
+            raise ValueError("Please specify the path to the trained model \
+                (`--model_path`) for resuming training.")
+
         model = training_module_cls(args, datamodule=data_module)
 
-        if args.resume_training:
-            logger.error("Model path not specified, training not resumed.")
-        
     ckpt_out_dir = os.path.join(args.out_dir,
         args.experiment
     )

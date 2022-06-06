@@ -36,6 +36,7 @@ class InferenceModule:
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name,
                                                        use_fast=True)
+        
 
     def predict(self, s):
         inputs = self.tokenizer(s, return_tensors='pt')

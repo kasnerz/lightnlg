@@ -35,29 +35,26 @@ class Dataset:
 
 
 class ExampleHFDataset(Dataset):
-    pass
-    # name = "openwebtext-10k"
+    # source: https://huggingface.co/datasets/scitldr
+    name = "scitldr"
 
-    # def __init__(self):
-    #     super().__init__()
+    def __init__(self):
+        super().__init__()
 
-    # def load(self, splits, path=None):
-    #     """
-    #     Load the dataset using HF `datasets`
-    #     """
-    #     dataset = datasets.load_dataset("stas/openwebtext-10k")
 
-    #     for i, example in enumerate(dataset["train"]):
-    #         text = example["text"]
+    def load(self, splits, path=None):
+        """
+        Load the dataset using HF `datasets`
+        """
+        dataset = datasets.load_dataset("scitldr")
 
-    #         if i % 10 == 0:
-    #             split = "test"
-    #         elif i % 10 == 1:
-    #             split = "dev"
-    #         else:
-    #             split = "train"
+        for split in splits:
+            data = dataset[split if split != "dev" else "validation"]
 
-    #         self.data[split].append(text)
+            for example in data:
+                entry = (" ".join(example["source"]), 
+                         " ".join(example["target"]))
+                self.data[split].append(entry)
 
 
 class ExampleCustomDataset(Dataset):
@@ -73,6 +70,7 @@ class ExampleCustomDataset(Dataset):
         block_size = 1024
         i = 0
 
+        # split the contiguous text into blocks of size `max_input_length` for GPT-2
         with open(os.path.join(path, "input.txt")) as f:
             text = f.read()
             idx = 0
@@ -80,6 +78,7 @@ class ExampleCustomDataset(Dataset):
             while idx + block_size < len(text):
                 block = text[idx:idx+block_size]
 
+                # 8/1/1 splits
                 if i % 10 == 0:
                     split = "test"
                 elif i % 10 == 1:
