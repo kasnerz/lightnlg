@@ -33,7 +33,7 @@ pip install -r requirements.txt
 ## Examples: Language Modeling
 
 ### :writing_hand: Interactive Prompting with GPT-2
-```bash
+```
 ./interact.py \
     --model_name gpt2  \
     --mode causal_lm \
@@ -51,7 +51,14 @@ pip install -r requirements.txt
 ```
 
 ### :book: Finetuning GPT-2 on Tiny Shakespeare
-```bash
+```
+./preprocess.py \
+    --dataset "tiny_shakespeare"  \
+    --dataset_dir "data/orig/tiny_shakespeare" \
+    --mode causal_lm \
+    --output "data/tiny_shakespeare"
+```
+```
 ./train.py \
     --mode causal_lm \
     --in_dir data/tiny_shakespeare \
@@ -64,7 +71,8 @@ pip install -r requirements.txt
 ```
 
 ### :feather: Generating Shakespeare using GPT-2
-```bash
+*Note: first finetune the model using the instructions above.*
+```
 ./interact.py \
     --experiment tiny_shakespeare \
     --mode causal_lm \
@@ -89,7 +97,7 @@ pip install -r requirements.txt
 ```
 ./interact.py \
     --model_name facebook/bart-base  \
-    --mode causal_lm \
+    --mode seq2seq \
     --max_length 200 \
     --beam_size 3
 ```
@@ -117,15 +125,16 @@ pip install -r requirements.txt
     --gpus 1 \
     --model_name facebook/bart-base \
     --accumulate_grad_batches 4 \
-    --max_epochs 10
+    --max_epochs 5
 ```
 
 ### :zap: Generating TD;DR from Scientific Paper Abstracts
+*Note: first finetune the model using the instructions above.*
 
 **Batch decoding**
 ```
 ./decode.py \
-    --experiment "scitldr \
+    --experiment "scitldr" \
     --in_dir data/scitldr \
     --split test \
     --gpus 1 \
