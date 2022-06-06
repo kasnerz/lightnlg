@@ -11,7 +11,7 @@ You can get started ASAP using the examples below which include:
 - **finetuning GPT-2** on the [Tiny Shakespeare](https://github.com/jcjohnson/torch-rnn/blob/master/data/tiny-shakespeare.txt) dataset,
 - **finetuning BART** on the [SciTLDR](https://huggingface.co/datasets/scitldr) dataset (TL;DR from abstracts).
 
-Feel free to use the codebase a skeleton for more advanced data processing, model tweaks, etc.
+Feel free to use the codebase as a skeleton for more advanced data processing, model tweaks, etc.
 
 Overview of scripts:
 - `data.py`- Loading external datasets (contains examples of a HuggingFace dataset and a custom plaintext dataset).
