@@ -96,6 +96,9 @@ class TrainingModule(pl.LightningModule):
     def add_model_specific_args(parent_parser):
         parser = argparse.ArgumentParser(parents=[parent_parser],
                                          add_help=False)
+
+        # these should be reasonable defaults for the seq2seq models
+        # for finetuning GPT-2,you can use higher learning rate (e.g., 5e-4)
         parser.add_argument("--learning_rate", default=2e-5, type=float)
         parser.add_argument("--adam_epsilon", default=1e-9, type=float)
         parser.add_argument("--adam_beta1", default=0.9, type=float)
@@ -135,6 +138,7 @@ class Seq2SeqTrainingModule(TrainingModule):
             skip_special_tokens=True,
             clean_up_tokenization_spaces=True
         )
+        # log the generated output and write it in the output file
         for idx, o in enumerate(out):
             logger.info(f"[{batch_idx * len(out) + idx}] {o}")
             self.out_file_handle.write(o + "\n")

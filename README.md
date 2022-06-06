@@ -23,9 +23,16 @@ Overview of scripts:
 - `decode.py` - Running batch inference on dev / test splits.
 - `interact.py` - Running interactive inference with user input.
 
+## Quickstart
+```
+python -m venv venv
+source ./venv/bin/activate
+pip install -r requirements.txt
+```
+
 ## Examples: Language Modeling
 
-### :writing_hand: Interactive Prompting
+### :writing_hand: Interactive Prompting with GPT-2
 ```bash
 ./interact.py \
     --model_name gpt2  \
@@ -78,7 +85,7 @@ Overview of scripts:
 
 ## Examples: Seq2Seq Generation
 
-### :mag: Interactive Denoising
+### :mag: Interactive Denoising with BART
 ```
 ./interact.py \
     --model_name facebook/bart-base  \
@@ -114,6 +121,18 @@ Overview of scripts:
 ```
 
 ### :zap: Generating TD;DR from Scientific Paper Abstracts
+
+**Batch decoding**
+```
+./decode.py \
+    --experiment "scitldr \
+    --in_dir data/scitldr \
+    --split test \
+    --gpus 1 \
+    --out_filename test.out
+```
+
+**Interactive**
 ```
 ./interact.py \
     --experiment scitldr \

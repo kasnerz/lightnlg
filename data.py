@@ -12,6 +12,10 @@ from collections import defaultdict, namedtuple
 logger = logging.getLogger(__name__)
 
 def get_dataset_class_by_name(name):
+    """
+    A helper function which allows to use the class attribute `name` of a Dataset 
+    (sub)class as a command-line parameter for loading the dataset.
+    """
     try:
         # case-insensitive
         available_classes = {o.name.lower() : o for o in globals().values() 
@@ -24,12 +28,16 @@ def get_dataset_class_by_name(name):
 
 
 class Dataset:
+    """
+    Base class for the datasets
+    """
     def __init__(self):
         self.data = {split: [] for split in ["train", "dev", "test"]}
 
     def load(self, splits, path=None):
         """
-        Load the dataset. Path can be specified for loading from a directory.
+        Load the dataset. Path can be specified for loading from a directory
+        or omitted if the dataset is loaded from HF.
         """
         raise NotImplementedError
 
@@ -58,6 +66,7 @@ class ExampleHFDataset(Dataset):
 
 
 class ExampleCustomDataset(Dataset):
+    # source: https://github.com/jcjohnson/torch-rnn/blob/master/data/tiny-shakespeare.txt
     name = "tiny_shakespeare"
 
     def __init__(self):
@@ -65,7 +74,7 @@ class ExampleCustomDataset(Dataset):
 
     def load(self, splits, path=None):
         """
-        Load the dataset
+        Load the dataset from the input directory
         """
         block_size = 1024
         i = 0
@@ -78,7 +87,7 @@ class ExampleCustomDataset(Dataset):
             while idx + block_size < len(text):
                 block = text[idx:idx+block_size]
 
-                # 8/1/1 splits
+                # 8/1/1 train/dev/test splits
                 if i % 10 == 0:
                     split = "test"
                 elif i % 10 == 1:

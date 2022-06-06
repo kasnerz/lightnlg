@@ -64,13 +64,16 @@ class DataModule(pl.LightningDataModule):
 
     def _pad_sequence(self, batch):
         """
-        Add paddings to align sequence endings
+        Add paddings to align sequence endings in a batch.
         """
         batch_collated = {}
 
         paddings = {
-            "input_ids" : self.tokenizer.pad_token_id or 0,
+            # 0 is used as a dummy padding if pad_token_id is not available 
+            # (such as for GPT-2), attention mask still has to be set properly
+            "input_ids" : self.tokenizer.pad_token_id or 0, 
             "attention_mask" : 0,
+            # -100 is a default `ignore_index` for torch.nn.NLLLoss
             "labels" : -100
         }
         for key in ["input_ids", "attention_mask", "labels"]:
@@ -82,6 +85,11 @@ class DataModule(pl.LightningDataModule):
 
 
 class CausalLMDataModule(DataModule):
+    """
+    Loads data for causal language modeling.
+    The data contains only raw text as an input which is duplicated
+    for the reference (automatically shifted by one position).
+    """
     def __init__(self, args, model_name=None):
         super().__init__(args, model_name)
 
@@ -134,6 +142,11 @@ class CausalLMDataModule(DataModule):
 
 
 class Seq2SeqDataModule(DataModule):
+    """
+    Loads data for seq2seq generation.
+    The data either contain (input, output) pairs or (in the case of hidden 
+    test sets) inputs only.
+    """
     def __init__(self, args, model_name=None):
         super().__init__(args, model_name)
 

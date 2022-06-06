@@ -8,8 +8,8 @@ import re
 import torch
 import pytorch_lightning as pl
 
-from inference import InferenceModule
-from dataloader import DataModule
+from inference import Seq2SeqInferenceModule
+from dataloader import Seq2SeqDataModule
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO, datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def parse_args(args=None):
     parser = argparse.ArgumentParser()
     parser = pl.Trainer.add_argparse_args(parser)
-    parser = DataModule.add_argparse_args(parser)
+    parser = Seq2SeqDataModule.add_argparse_args(parser)
 
     parser.add_argument("--exp_dir", default="experiments", type=str,
         help="Base directory of the experiment.")
@@ -56,14 +56,19 @@ if __name__ == "__main__":
     model_path = os.path.join(args.exp_dir, args.experiment, args.checkpoint)
     out_path = os.path.join(args.exp_dir, args.experiment, f"{args.split}.out")
 
-    di = InferenceModule(args, model_path=model_path)
-    dm = DataModule(args, model_name=di.model_name)
+    di = Seq2SeqInferenceModule(args, model_path=model_path)
+
+    if "gpt" in di.model_name:
+        raise NotImplementedError("Batch decoding not implemented for causal LM.")
+
+    dm = Seq2SeqDataModule(args, model_name=di.model_name)
 
     dm.prepare_data()
     dm.setup('predict')
 
-    trainer = pl.Trainer.from_argparse_args(args)
+    trainer = pl.Trainer.from_argparse_args(args)  
 
+    # a small hack to allow the model write output in a plain text file
     out_filename = args.out_filename or f"{args.split}.out"
     out_file_handle = open(os.path.join(args.exp_dir, args.experiment, out_filename), "w")
 
@@ -75,5 +80,7 @@ if __name__ == "__main__":
         "dev" : dm.val_dataloader,
         "test" : dm.test_dataloader
     }
+    # run the batch decoding
     trainer.test(test_dataloaders=dataloader_map[args.split](), model=di.model)
+    
     out_file_handle.close()

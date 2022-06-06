@@ -71,6 +71,7 @@ if __name__ == "__main__":
         dm = inference_module_cls(args)
 
     while True:
+        # wait for user input
         s = input("[In]: ")
         out = dm.predict(s)
         

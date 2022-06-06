@@ -32,7 +32,7 @@ class Preprocessor:
                 "in" : entry
             }
         elif self.mode == "seq2seq":
-            # a simple case without any processing
+            # a simple case without any extra processing
             example = {
                 "in" : entry[0],
                 "out" : entry[1]

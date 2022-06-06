@@ -36,7 +36,6 @@ class InferenceModule:
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name,
                                                        use_fast=True)
-        
 
     def predict(self, s):
         inputs = self.tokenizer(s, return_tensors='pt')
@@ -52,17 +51,7 @@ class InferenceModule:
 
 
     def generate(self, input_ids):
-        out = self.model.model.generate(input_ids, 
-            max_length=self.args.max_length,
-            num_beams=self.beam_size,
-            num_return_sequences=self.beam_size
-        )
-
-        sentences = self.tokenizer.batch_decode(out, 
-            skip_special_tokens=True, 
-            clean_up_tokenization_spaces=True
-        )
-        return sentences
+        raise NotImplementedError
 
 
 class CausalLMInferenceModule(InferenceModule):
@@ -73,6 +62,7 @@ class CausalLMInferenceModule(InferenceModule):
         )
 
     def generate(self, input_ids):
+        # top-k sampling, other methods TBD
         out = self.model.model.generate(input_ids,
             do_sample=True,   
             top_k=50, 
@@ -95,3 +85,16 @@ class Seq2SeqInferenceModule(InferenceModule):
                 model_path=model_path, 
                 training_module_cls=Seq2SeqTrainingModule
             )
+
+
+    def generate(self, input_ids):
+        out = self.model.model.generate(input_ids, 
+            max_length=self.args.max_length,
+            num_beams=self.beam_size,
+            num_return_sequences=self.beam_size
+        )
+        sentences = self.tokenizer.batch_decode(out, 
+            skip_special_tokens=True, 
+            clean_up_tokenization_spaces=True
+        )
+        return sentences
