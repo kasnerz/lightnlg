@@ -1,6 +1,6 @@
 # LightNLG: A Starter Pack for NLG with PyTorch Lightning :zap: 
 
-A minimalistic codebase for training natural language generation models from [HuggingFace Transformers](https://huggingface.co/docs/transformers) using [PyTorch Lightning](https://www.pytorchlightning.ai).
+A minimalistic codebase for finetuning and interacting with natural language generation models from [HuggingFace Transformers](https://huggingface.co/docs/transformers) using [PyTorch Lightning](https://www.pytorchlightning.ai).
 
 The code can be used as-is for:
 1) **language modeling** using an autoregressive LM (e.g, GPT-2),
