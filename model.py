@@ -27,6 +27,8 @@ def add_special_tokens(tokenizer, model, tokens):
 
 
 class TrainingModule(pl.LightningModule):
+    special_tokens = []
+    
     def __init__(self, args, **kwargs):
         super().__init__()
         self.args = args
@@ -114,6 +116,7 @@ class TrainingModule(pl.LightningModule):
 
 
 class CausalLMTrainingModule(TrainingModule):
+    special_tokens = []
     def __init__(self, args, **kwargs):
         super().__init__(args, **kwargs)
 
@@ -125,7 +128,6 @@ class CausalLMTrainingModule(TrainingModule):
 
 class Seq2SeqTrainingModule(TrainingModule):
     special_tokens = [] # custom special tokens such as "<title>" etc. may be defined here
-
     def __init__(self, args, **kwargs):
         super().__init__(args, **kwargs)
 

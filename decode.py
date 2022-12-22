@@ -81,3 +81,5 @@ if __name__ == "__main__":
         for out_batch in predictions:
             for o in out_batch:
                 f.write(o + "\n")
+
+    logger.info(f"Outputs saved as {out_path}")
