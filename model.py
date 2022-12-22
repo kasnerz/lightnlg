@@ -1,25 +1,17 @@
 #!/usr/bin/env python3
 
-import numpy as np
-import os
 import logging
 import argparse
 import pytorch_lightning as pl
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.utils.data import DataLoader, Dataset
 
 from transformers import (
     AutoModelForCausalLM,
     AutoModelForSeq2SeqLM,
-    AutoConfig,
     AutoTokenizer,
     get_scheduler
 )
 from torch.optim import (
     AdamW,
-    Adagrad
 )
 logger = logging.getLogger(__name__)
 
@@ -69,9 +61,13 @@ class TrainingModule(pl.LightningModule):
             eps=self.args.adam_epsilon,
             betas=(self.args.adam_beta1, self.args.adam_beta2)
         )
-        total_steps = self.args.max_steps if (self.args.max_steps is not None and self.args.max_steps != -1) else len(
-            self.datamodule.train_dataloader()) * self.args.max_epochs
+        max_steps = -1 if self.args.max_steps is None else self.args.max_steps
+        max_epochs = int(self.args.max_epochs)
+
+        total_steps = max_epochs * len(self.datamodule.train_dataloader()) if max_steps == -1 else max_steps
         warmup_steps = total_steps * self.args.warmup_proportion
+
+        import pdb; pdb.set_trace();
 
         scheduler = get_scheduler(
             "polynomial",

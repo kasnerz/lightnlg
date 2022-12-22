@@ -1,5 +1,5 @@
-datasets==1.15.1
-pytorch-lightning==1.5.10
-torch==1.10.2
-transformers==4.18.0
-protobuf==3.20
+--extra-index-url https://download.pytorch.org/whl/cu113 # for CUDA 11.3, this can be set according to your CUDA version
+torch==1.12.1+cu113
+datasets==2.5.1
+pytorch-lightning==1.7.7
+transformers==4.22.2

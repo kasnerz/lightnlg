@@ -13,17 +13,24 @@ logger = logging.getLogger(__name__)
 
 def get_dataset_class_by_name(name):
     """
-    A helper function which allows to use the class attribute `name` of a Dataset 
-    (sub)class as a command-line parameter for loading the dataset.
+    A helper function which provides mapping between dataset classes and command-line arguments.
     """
     try:
-        # case-insensitive
-        available_classes = {o.name.lower() : o for o in globals().values() 
-                                if type(o)==type(Dataset) and hasattr(o, "name")}
-        return available_classes[name.lower()]
+        dataset_mapping = {
+            "scitldr": "ExampleHFDataset",
+            "tiny_shakespeare": "ExampleCustomDataset",
+        }
+        dataset_module = __import__(
+            name,
+            globals=globals(),
+            fromlist=[dataset_mapping[name]],
+            level=1,
+        )
+        dataset_class = getattr(dataset_module, dataset_mapping[name])
+        return dataset_class
     except AttributeError:
-        logger.error(f"Unknown dataset: '{args.dataset}'. Please create \
-            a class with an attribute name='{args.dataset}' in 'data.py'.")
+        logger.error(f"Unknown dataset: '{name}'. Please create \
+            a class in 'data.py' and add the mapping to `data.py:get_dataset_class_by_name()`.")
         return None
 
 
@@ -44,8 +51,6 @@ class Dataset:
 
 class ExampleHFDataset(Dataset):
     # source: https://huggingface.co/datasets/scitldr
-    name = "scitldr"
-
     def __init__(self):
         super().__init__()
 
@@ -67,8 +72,6 @@ class ExampleHFDataset(Dataset):
 
 class ExampleCustomDataset(Dataset):
     # source: https://github.com/jcjohnson/torch-rnn/blob/master/data/tiny-shakespeare.txt
-    name = "tiny_shakespeare"
-
     def __init__(self):
         super().__init__()
 

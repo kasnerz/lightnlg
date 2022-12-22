@@ -1,19 +1,9 @@
 #!/usr/bin/env python3
 
-import numpy as np
-import os
 import logging
-import argparse
-import pytorch_lightning as pl
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
-from torch.utils.data import DataLoader, Dataset
-
-from model import TrainingModule, CausalLMTrainingModule, Seq2SeqTrainingModule
+from model import CausalLMTrainingModule, Seq2SeqTrainingModule
 from transformers import (
-    AutoConfig,
     AutoTokenizer,
 )
 

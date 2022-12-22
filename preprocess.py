@@ -3,18 +3,32 @@
 import os
 import argparse
 import logging
-import data
 import json
 import random
-import re
-import numpy as np
-from collections import defaultdict
 from data import get_dataset_class_by_name
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO, datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
 
 class Preprocessor:
+    """
+    Load the raw dataset using a loader specified in `data.py`,
+    process it, and save it in the `./data/{output_dir}` directory.
+
+    By default, a directory with processed dataset will contain the files `train.json`, `dev.json`, `test.json`,
+    each file with the following structure:
+    {
+        "data" : [
+            {... data entry #1 ...},
+            {... data entry #2 ...},
+            .
+            .
+            .
+            {... data entry #N ...},
+        ]
+    }
+    This format is expected for loading the data into PyTorch dataloaders for training and inference.
+    """
     def __init__(self, dataset, out_dirname, mode):
         self.dataset = dataset
         self.out_dirname = out_dirname
@@ -48,7 +62,7 @@ class Preprocessor:
         output = {"data" : []}
         data = self.dataset.data[split]
 
-        for i, entry in enumerate(data):
+        for entry in data:
             examples = self.create_examples(entry, dataset)
 
             for example in examples:

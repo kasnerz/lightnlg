@@ -28,7 +28,7 @@ class DataModule(pl.LightningDataModule):
         self.args = args
         self.model_name = model_name or self.args.model_name
         # disable the "huggingface/tokenizers: The current process just got forked" warning
-        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+        # os.environ["TOKENIZERS_PARALLELISM"] = "false"
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name,
                                                        use_fast=True)
 
