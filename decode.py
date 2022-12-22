@@ -4,7 +4,6 @@ import argparse
 import logging
 import numpy as np
 import os
-import re
 import torch
 import pytorch_lightning as pl
 

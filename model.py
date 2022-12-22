@@ -67,8 +67,6 @@ class TrainingModule(pl.LightningModule):
         total_steps = max_epochs * len(self.datamodule.train_dataloader()) if max_steps == -1 else max_steps
         warmup_steps = total_steps * self.args.warmup_proportion
 
-        import pdb; pdb.set_trace();
-
         scheduler = get_scheduler(
             "polynomial",
             optimizer,

@@ -21,10 +21,10 @@ def get_dataset_class_by_name(name):
             "tiny_shakespeare": "ExampleCustomDataset",
         }
         dataset_module = __import__(
-            name,
+            __name__,
             globals=globals(),
             fromlist=[dataset_mapping[name]],
-            level=1,
+            level=0,
         )
         dataset_class = getattr(dataset_module, dataset_mapping[name])
         return dataset_class
