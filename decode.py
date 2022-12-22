@@ -53,25 +53,20 @@ if __name__ == "__main__":
     torch.set_num_threads(args.max_threads)
 
     model_path = os.path.join(args.exp_dir, args.experiment, args.checkpoint)
-    out_path = os.path.join(args.exp_dir, args.experiment, f"{args.split}.out")
+    out_path = os.path.join(args.exp_dir, args.experiment, args.out_filename or f"{args.split}.out")
 
     di = Seq2SeqInferenceModule(args, model_path=model_path)
 
     if "gpt" in di.model_name:
         raise NotImplementedError("Batch decoding not implemented for causal LM.")
 
-    dm = Seq2SeqDataModule(args, model_name=di.model_name)
+    dm = Seq2SeqDataModule(args, special_tokens=di.special_tokens, model_name=di.model_name)
 
     dm.prepare_data()
     dm.setup('predict')
 
     trainer = pl.Trainer.from_argparse_args(args)  
 
-    # a small hack to allow the model write output in a plain text file
-    out_filename = args.out_filename or f"{args.split}.out"
-    out_file_handle = open(os.path.join(args.exp_dir, args.experiment, out_filename), "w")
-
-    di.model.out_file_handle = out_file_handle
     di.model.tokenizer = dm.tokenizer
     di.model.beam_size_decode = args.beam_size
 
@@ -80,6 +75,9 @@ if __name__ == "__main__":
         "test" : dm.test_dataloader
     }
     # run the batch decoding
-    trainer.test(test_dataloaders=dataloader_map[args.split](), model=di.model)
-    
-    out_file_handle.close()
+    predictions = trainer.predict(dataloaders=dataloader_map[args.split](), model=di.model, return_predictions=True)
+
+    with open(out_path, "w") as f:
+        for out_batch in predictions:
+            for o in out_batch:
+                f.write(o + "\n")

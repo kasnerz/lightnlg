@@ -15,6 +15,16 @@ from torch.optim import (
 )
 logger = logging.getLogger(__name__)
 
+def add_special_tokens(tokenizer, model, tokens):
+    """
+    Allows to add custom special tokens to the model vocabulary.
+    """
+    special_tokens_dict = {'additional_special_tokens': tokens}
+    tokenizer.add_special_tokens(special_tokens_dict)
+
+    if model is not None:
+        model.resize_token_embeddings(len(tokenizer))
+
 
 class TrainingModule(pl.LightningModule):
     def __init__(self, args, **kwargs):
@@ -114,6 +124,8 @@ class CausalLMTrainingModule(TrainingModule):
 
 
 class Seq2SeqTrainingModule(TrainingModule):
+    special_tokens = [] # custom special tokens such as "<title>" etc. may be defined here
+
     def __init__(self, args, **kwargs):
         super().__init__(args, **kwargs)
 
@@ -121,8 +133,10 @@ class Seq2SeqTrainingModule(TrainingModule):
             args.model_name,
             return_dict=True
         )
+        add_special_tokens(self.tokenizer, self.model, tokens=self.__class__.special_tokens)
 
-    def test_step(self, batch, batch_idx):
+
+    def predict_step(self, batch, batch_idx):
         out = self.model.generate(batch["input_ids"], 
             max_length=self.args.max_length,
             num_beams=1,
@@ -132,7 +146,8 @@ class Seq2SeqTrainingModule(TrainingModule):
             skip_special_tokens=True,
             clean_up_tokenization_spaces=True
         )
-        # log the generated output and write it in the output file
         for idx, o in enumerate(out):
             logger.info(f"[{batch_idx * len(out) + idx}] {o}")
-            self.out_file_handle.write(o + "\n")
+
+        return out
+          

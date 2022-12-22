@@ -14,6 +14,8 @@ from torch.utils.data import DataLoader, Dataset
 from torch.nn.utils.rnn import pad_sequence
 from transformers import AutoTokenizer
 
+from model import add_special_tokens
+
 logger = logging.getLogger(__name__)
 
 """
@@ -23,14 +25,15 @@ class DataModule(pl.LightningDataModule):
     """
     Common PL DataModule methods
     """
-    def __init__(self, args, model_name=None):
+    def __init__(self, args, special_tokens, model_name=None):
         super().__init__()
         self.args = args
         self.model_name = model_name or self.args.model_name
-        # disable the "huggingface/tokenizers: The current process just got forked" warning
-        # os.environ["TOKENIZERS_PARALLELISM"] = "false"
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name,
                                                        use_fast=True)
+        if special_tokens:
+            add_special_tokens(self.tokenizer, None, tokens=special_tokens)
+
 
     def setup(self, stage):
         return NotImplementedError
@@ -91,8 +94,8 @@ class CausalLMDataModule(DataModule):
     The data contains only raw text as an input which is duplicated
     for the reference (automatically shifted by one position).
     """
-    def __init__(self, args, model_name=None):
-        super().__init__(args, model_name)
+    def __init__(self, args, special_tokens, model_name=None):
+        super().__init__(args, special_tokens, model_name)
 
 
     def setup(self, stage):
@@ -148,8 +151,8 @@ class Seq2SeqDataModule(DataModule):
     The data either contain (input, output) pairs or (in the case of hidden 
     test sets) inputs only.
     """
-    def __init__(self, args, model_name=None):
-        super().__init__(args, model_name)
+    def __init__(self, args, special_tokens, model_name=None):
+        super().__init__(args, special_tokens, model_name)
 
     def setup(self, stage):
         data_dir = self.args.in_dir

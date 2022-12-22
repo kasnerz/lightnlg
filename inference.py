@@ -3,6 +3,7 @@
 import logging
 
 from model import CausalLMTrainingModule, Seq2SeqTrainingModule
+from model import add_special_tokens
 from transformers import (
     AutoTokenizer,
 )
@@ -13,6 +14,7 @@ class InferenceModule:
     def __init__(self, args, training_module_cls, model_path=None):
         self.args = args
         self.beam_size = args.beam_size
+        self.special_tokens = training_module_cls.special_tokens
 
         if model_path is not None:
             self.model = training_module_cls.load_from_checkpoint(model_path)

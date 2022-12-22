@@ -67,7 +67,7 @@ if __name__ == '__main__':
     else:
         logger.error(f"Unknown mode: {args.mode}")
 
-    data_module = data_module_cls(args)
+    data_module = data_module_cls(args, special_tokens=training_module_cls.special_tokens)
     data_module.prepare_data()
     data_module.setup('fit')
     resume_from_checkpoint = None
