@@ -28,10 +28,9 @@ def get_dataset_class_by_name(name):
         )
         dataset_class = getattr(dataset_module, dataset_mapping[name])
         return dataset_class
-    except AttributeError:
-        logger.error(f"Unknown dataset: '{name}'. Please create \
-            a class in 'data.py' and add the mapping to `data.py:get_dataset_class_by_name()`.")
-        return None
+    except KeyError:
+        logger.error(f"Unknown dataset: '{name}'. Please create a class in 'data.py' and add the mapping to `data.py:get_dataset_class_by_name()`.")
+        raise
 
 
 class Dataset:
