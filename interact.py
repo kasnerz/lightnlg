@@ -41,6 +41,8 @@ if __name__ == "__main__":
         help="Maximum number of tokens per example")
     parser.add_argument("--checkpoint", type=str, default="model.ckpt",
         help="Override the default checkpoint name 'model.ckpt'.")
+    parser.add_argument("--load_in_8bit", action="store_true", 
+        help="Use 8-bit precision. Packages `bitsandbytes` and `accelerate` need to be installed.")
     args = parser.parse_args()
 
     logger.info(args)
