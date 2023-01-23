@@ -22,6 +22,8 @@ def parse_args(args=None):
         help="Base directory of the experiment.")
     parser.add_argument("--experiment", type=str, required=True,
         help="Experiment name.")
+    parser.add_argument("--model_name", type=str, required=True,
+        help="Model name (for loading a vanilla HF model).")
     parser.add_argument("--seed", default=42, type=int,
         help="Random seed.")
     parser.add_argument("--batch_size", default=32, type=int,
@@ -52,10 +54,15 @@ if __name__ == "__main__":
     np.random.seed(args.seed)
     torch.set_num_threads(args.max_threads)
 
-    model_path = os.path.join(args.exp_dir, args.experiment, args.checkpoint)
     out_path = os.path.join(args.exp_dir, args.experiment, args.out_filename or f"{args.split}.out")
+    
+    if args.model_name:
+        os.makedirs(os.path.join(args.exp_dir, args.experiment), exist_ok=True)
+        di = Seq2SeqInferenceModule(args)
+    elif args.experiment:
+        model_path = os.path.join(args.exp_dir, args.experiment, args.checkpoint)
+        di = Seq2SeqInferenceModule(args, model_path=model_path)
 
-    di = Seq2SeqInferenceModule(args, model_path=model_path)
 
     if "gpt" in di.model_name:
         raise NotImplementedError("Batch decoding not implemented for causal LM.")
