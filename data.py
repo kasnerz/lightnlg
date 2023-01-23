@@ -9,7 +9,9 @@ import random
 import datasets
 
 from collections import defaultdict, namedtuple
+
 logger = logging.getLogger(__name__)
+
 
 def get_dataset_class_by_name(name):
     """
@@ -29,7 +31,9 @@ def get_dataset_class_by_name(name):
         dataset_class = getattr(dataset_module, dataset_mapping[name])
         return dataset_class
     except KeyError:
-        logger.error(f"Unknown dataset: '{name}'. Please create a class in 'data.py' and add the mapping to `data.py:get_dataset_class_by_name()`.")
+        logger.error(
+            f"Unknown dataset: '{name}'. Please create a class in 'data.py' and add the mapping to `data.py:get_dataset_class_by_name()`."
+        )
         raise
 
 
@@ -37,6 +41,7 @@ class Dataset:
     """
     Base class for the datasets
     """
+
     def __init__(self):
         self.data = {split: [] for split in ["train", "dev", "test"]}
 
@@ -53,7 +58,6 @@ class ExampleHFDataset(Dataset):
     def __init__(self):
         super().__init__()
 
-
     def load(self, splits, path=None):
         """
         Load the dataset using HF `datasets`
@@ -64,8 +68,7 @@ class ExampleHFDataset(Dataset):
             data = dataset[split if split != "dev" else "validation"]
 
             for example in data:
-                entry = (" ".join(example["source"]), 
-                         " ".join(example["target"]))
+                entry = (" ".join(example["source"]), " ".join(example["target"]))
                 self.data[split].append(entry)
 
 
@@ -87,7 +90,7 @@ class ExampleCustomDataset(Dataset):
             idx = 0
 
             while idx + block_size < len(text):
-                block = text[idx:idx+block_size]
+                block = text[idx : idx + block_size]
 
                 # 8/1/1 train/dev/test splits
                 if i % 10 == 0:
