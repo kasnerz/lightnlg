@@ -75,6 +75,7 @@ if __name__ == "__main__":
     while True:
         # wait for user input
         s = input("[In]: ")
+        s = s.replace("\\n", "\n")
         out = dm.predict(s)
         
         print("[Out]:")
